@@ -1,0 +1,80 @@
+---
+# tasks file for wordpress
+- name: Crear volumenes de Docker para Wordpress
+  docker_volume:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - "wordpress-html"
+    - "wordpress-content"
+
+- name: Lanzar contenedor Wordpress
+  docker_container:
+    name: "ha-wordpress"
+    image: wordpress:php8.2-apache
+    comparisons:
+      networks: strict
+    pull: true
+    ports:
+      - "80:80"
+    env:
+      WORDPRESS_DB_HOST: "{{ hostvars[inventory_hostname]['MYSQL_WP_HOST'] }}"
+      WORDPRESS_DB_NAME: "{{ hostvars[inventory_hostname]['MYSQL_WP_DATABASE'] }}"
+      WORDPRESS_DB_USER: "{{ hostvars[inventory_hostname]['MYSQL_WP_USER'] }}"
+      WORDPRESS_DB_PASSWORD: "{{ hostvars[inventory_hostname]['MYSQL_WP_PASSWORD'] }}"
+    volumes:
+      - "wordpress-html:/var/www/html"
+      - "wordpress-content:/var/www/html/wp-content"
+    restart_policy: unless-stopped
+
+- name: Esperar 5 segundos para inicializar Wordpress
+  pause:
+    seconds: 5
+
+- name: Ejecutar instalacion automatica de Wordpress
+  docker_container:
+    name: "ha-wordpress-cli"
+    image: wordpress:cli-2.7.1
+    comparisons:
+      networks: strict
+    pull: true
+    env:
+      WORDPRESS_DB_HOST: "{{ hostvars[inventory_hostname]['MYSQL_WP_HOST'] }}"
+      WORDPRESS_DB_NAME: "{{ hostvars[inventory_hostname]['MYSQL_WP_DATABASE'] }}"
+      WORDPRESS_DB_USER: "{{ hostvars[inventory_hostname]['MYSQL_WP_USER'] }}"
+      WORDPRESS_DB_PASSWORD: "{{ hostvars[inventory_hostname]['MYSQL_WP_PASSWORD'] }}"
+    volumes:
+      - "wordpress-html:/var/www/html"
+      - "wordpress-content:/var/www/html/wp-content"
+    command: wp core install --url="{{ hostvars[inventory_hostname]['DOMAIN'] }}" --title="{{ hostvars[inventory_hostname]['WP_TITLE'] }}" --admin_user="{{ hostvars[inventory_hostname]['WP_ADMIN_USER'] }}" --admin_password="{{ hostvars[inventory_hostname]['WP_ADMIN_PASSWORD'] }}" --admin_email="{{ hostvars[inventory_hostname]['ADMIN_MAIL'] }}"
+  when: inventory_hostname in groups["primary"]
+
+- name: Esperar a que finalice la instalacion
+  pause:
+    seconds: 60
+
+- name: Obtener estado de la instalacion
+  docker_container_info:
+    name: "ha-wordpress-cli"
+  register: wpclistatus
+  when: inventory_hostname in groups["primary"]
+
+
+- name: Comprobar si la instalacion ha terminado correctamente
+  fail: 
+    msg: 'Wordpress failed to install. Check container logs'
+  when: inventory_hostname in groups["primary"] and wpclistatus.container['State']['ExitCode'] != 0
+
+- name: Limpiar Wordpress CLI
+  block:
+    - name: Eliminar contenedor de Wordpress CLI
+      docker_container:
+        name: "ha-wordpress-cli"
+        state: absent
+
+    - name: Eliminar imagen de Wordpress CLI
+      docker_image:
+        name: wordpress
+        tag: cli-2.7.1
+        state: absent
+  when: inventory_hostname in groups["primary"] and wpclistatus.container['State']['ExitCode'] == 0

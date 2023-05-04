@@ -1,0 +1,6 @@
+- hosts: ha_wordpress
+  roles:
+    - docker-install
+    - wordpress
+  become: yes
+  become_method: sudo

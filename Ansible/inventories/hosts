@@ -1,0 +1,10 @@
+all:
+  children:
+    ha_wordpress:
+      children:
+        primary:
+          hosts:
+            20.103.72.212:
+        secondary:
+          hosts:
+            20.103.73.157:
