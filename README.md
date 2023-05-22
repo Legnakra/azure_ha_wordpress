@@ -113,4 +113,7 @@ git clone https://github.com/Legnakra/azure_ha_wordpress.git
   ![image](https://github.com/Legnakra/azure_ha_wordpress/assets/98739593/33b1214b-daf5-4ed4-a42d-9b885c2018fe)
 
   ![image](https://github.com/Legnakra/azure_ha_wordpress/assets/98739593/e318e963-b9ae-41ff-b639-5755e20b4993)
-
+  
+## Autora :computer:
+* María Jesús Alloza Rodríguez
+* :school:I.E.S. Gonzalo Nazareno :round_pushpin:(Dos Hermanas, Sevilla).
