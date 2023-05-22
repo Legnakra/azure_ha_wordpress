@@ -12,6 +12,8 @@
 
 Despliegue de una infraestructura de alta disponibilidad en Azure con Wordpress, configurado con Ansible
 
+![image](https://github.com/Legnakra/azure_ha_wordpress/assets/98739593/5a74917c-dbf2-4b8b-ae2c-96a6cb35e37f)
+
 Compuesto por:
 
 - Microsoft Azure Subscription
