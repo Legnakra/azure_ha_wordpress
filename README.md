@@ -12,7 +12,7 @@
 
 Despliegue de una infraestructura de alta disponibilidad en Azure con Wordpress, configurado con Ansible
 
-![image](https://github.com/Legnakra/azure_ha_wordpress/assets/98739593/5a74917c-dbf2-4b8b-ae2c-96a6cb35e37f)
+![Esquema_Maria drawio (1)](https://github.com/Legnakra/azure_ha_wordpress/assets/98739593/4a12f1cf-53eb-45dd-8a7d-c26cab6061c6)
 
 Compuesto por:
 
