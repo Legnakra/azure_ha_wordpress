@@ -4,7 +4,7 @@ all:
       children:
         primary:
           hosts:
-            20.103.72.212:
+            51.138.85.20:
         secondary:
           hosts:
-            20.103.73.157:
+            51.138.85.112:
